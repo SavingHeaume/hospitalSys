@@ -12,4 +12,5 @@ public interface LoginService {
     Login getAdmin(Integer id);
     String login(Login  login);
     String regist(Login login);
+    Login findIdByUsername(String username);
 }

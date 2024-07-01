@@ -79,6 +79,10 @@ public class LoginServiceImpl implements LoginService {
         return message;
     }
 
+    public Login findIdByUsername(String username) {
+        return loginMapper.findByUsername(username);
+    }
+
     @Override
     public String regist(Login login) {
         String message;
