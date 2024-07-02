@@ -6,17 +6,26 @@ import com.hospital.entity.Hospitalization;
 import com.hospital.entity.Login;
 import com.hospital.entity.Patient;
 import com.hospital.service.*;
+import com.hospital.uitls.DateUtils;
 import com.hospital.uitls.PDFUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.itextpdf.text.Document;
 import org.apache.poi.hssf.usermodel.HSSFObjectData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -76,7 +85,7 @@ public class PatientController {
 
   @RequestMapping(value = "/admin/patient", method = RequestMethod.POST)
   @ResponseBody
-  public JSONObject delPatient(@RequestBody Patient patient) {
+  public JSONObject addPatient(@RequestBody Patient patient) {
     JSONObject json = new JSONObject();
     json.put("message", patientService.addPatient(patient));
     return json;
@@ -194,4 +203,22 @@ public class PatientController {
     json.put("message", PDFUtils.createAppointMent(appointment, path));
     return json;
   }
+
+  @RequestMapping(value = "/android/getRecord/{id}", method = RequestMethod.GET)
+  public ResponseEntity<?> GetRecord(@PathVariable Integer id) throws UnsupportedEncodingException {
+    Appointment appointment = appointmentService.getAppointment(id);
+
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    Document document = new Document();
+    PDFUtils.AndroidGetPdf(appointment, document, baos);
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_PDF);
+    String filename = appointment.getPatientname() + DateUtils.date2String(new Date()) + "挂号单.pdf";
+    headers.setContentDispositionFormData("attachment", new String(filename.getBytes(), "UTF-8"));
+
+    return new ResponseEntity<>(baos.toByteArray(), headers, HttpStatus.OK);
+  }
+
+
 }

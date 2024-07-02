@@ -62,4 +62,12 @@ public class AppointmentController {
         json.put("message",appointmentService.addAppointment(appointment));
         return json;
     }
+
+    @RequestMapping(value = "/android/getAppointmentByPatient/{id}", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject GetAppointmentByPatient(@PathVariable Integer id) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("patientRecord", appointmentService.getPatientMessage(id));
+        return jsonObject;
+    }
 }

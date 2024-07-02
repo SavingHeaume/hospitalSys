@@ -105,6 +105,7 @@ public class DoctorController {
     json.put("message", patientService.seek(patient));
     return json;
   }
+
   @RequestMapping(value = "/doctor/zation", method = RequestMethod.POST)
   @ResponseBody
   public JSONObject zation(@RequestBody Hospitalization hospitalization) {
@@ -148,5 +149,11 @@ public class DoctorController {
     String message = PDFUtils.createSeekInfo(seek, optionService, path);
     json.put("message", message);
     return json;
+  }
+
+  @RequestMapping(value = "/android/getDoctorById/{id}", method = RequestMethod.GET)
+  @ResponseBody
+  public Doctor GetDoctorById(@PathVariable Integer id) {
+    return doctorService.getDoctor(id);
   }
 }

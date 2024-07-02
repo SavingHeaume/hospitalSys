@@ -13,6 +13,7 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -28,7 +29,7 @@ public class PDFUtils {
         try {
             //创建字体
             BaseFont bf = BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED);
-            font = new Font(bf, 12);//使用字体
+            font = new Font(bf, 13);//使用字体
         } catch (DocumentException | IOException e) {
             e.printStackTrace();
         }
@@ -81,6 +82,33 @@ public class PDFUtils {
         Document document = new Document();
         try {
             PdfWriter.getInstance(document, Files.newOutputStream(Paths.get(path + appointment.getPatientname() + DateUtils.date2String(new Date()) + "挂号单.pdf")));
+            document.open();
+            PdfPTable pdfPTable = new PdfPTable(4);
+            createCell("挂号单", 4, pdfPTable, font);
+            createCell("预约号码:", 2, pdfPTable, font);
+            createCell(appointment.getId() + "", 2, pdfPTable, font);
+            createCell("患者姓名:", 2, pdfPTable, font);
+            createCell(appointment.getPatientname(), 2, pdfPTable, font);
+            createCell("预约科室:", 2, pdfPTable, font);
+            createCell(appointment.getDepartment(), 2, pdfPTable, font);
+            createCell("预约医生:", 2, pdfPTable, font);
+            createCell(appointment.getDoctorname(), 2, pdfPTable, font);
+            createCell("门诊费:", 2, pdfPTable, font);
+            createCell(appointment.getExpenses() + "  (元)", 2, pdfPTable, font);
+            createCell("预约时间:", 2, pdfPTable, font);
+            createCell(date2String(appointment.getTime()), 2, pdfPTable, font);
+            document.add(pdfPTable);
+            document.close();
+            return "已生成";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "系统内部错误，生成失败";
+        }
+    }
+
+    public static String AndroidGetPdf(Appointment appointment, Document document, ByteArrayOutputStream baos) {
+        try {
+            PdfWriter.getInstance(document, baos);
             document.open();
             PdfPTable pdfPTable = new PdfPTable(4);
             createCell("挂号单", 4, pdfPTable, font);
